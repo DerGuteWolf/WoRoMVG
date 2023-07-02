@@ -1,0 +1,17 @@
+---
+applications:
+- name: WoRoMVG
+  path: ./
+  memory: 128M
+  stack: cflinuxfs4
+  buildpacks:
+  - python_buildpack
+  health-check-type: process
+  no-route: true
+  env:
+    GMAPS_KEY: ((GMAPS_KEY))
+    BOT_TOKEN: ((BOT_TOKEN))
+  command: python setup.py
+  metadata:
+    annotations:
+      contact: "mail@wolfgangroeckelein.de"
