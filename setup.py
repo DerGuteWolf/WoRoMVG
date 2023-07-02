@@ -113,7 +113,7 @@ async def abfahrt_interal(station: str, offset: int):
     ):
         output += chunk
     file = discord.File(fp=io.BytesIO(output), filename='staticmap.png')
-    departures = await MvgApi.departures_async(stationInfo['id'])
+    departures = await MvgApi.departures_async(station_id=stationInfo['id'], limit=9, offset=offset)
     embed = discord.Embed(description=f"Abfahrten von { stationInfo['name'] }:", colour = 0xFFB6C1)
     embed.set_image(url="attachment://staticmap.png")
     for departure in departures:
