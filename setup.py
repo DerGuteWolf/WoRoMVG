@@ -26,7 +26,6 @@ bot_token = os.getenv('BOT_TOKEN')
 
 berlin = timezone('Europe/Berlin')
 
-
 gmaps = googlemaps.Client(key=gmaps_key)
 
 
@@ -118,7 +117,7 @@ async def abfahrt_interal(station: str, offset: int):
     embed = discord.Embed(description=f"Abfahrten von { stationInfo['name'] }:", colour = 0xFFB6C1)
     embed.set_image(url="attachment://staticmap.png")
     for departure in departures:
-        embed.add_field(name=f"{ '{:%H:%M}'.format(datetime.fromtimestamp( departure['time']), tz=berlin ) }", value=f"{ departure['type'] } { departure['line'] } nach { departure['destination'] }", inline=True)
+        embed.add_field(name=f"{ '{:%H:%M}'.format(datetime.fromtimestamp( departure['time'], tz=berlin )) }", value=f"{ departure['type'] } { departure['line'] } nach { departure['destination'] }", inline=True)
     return (file, embed)  
 
 print("start")
