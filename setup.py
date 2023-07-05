@@ -1,7 +1,7 @@
 import io
 import discord
 from discord import client
-from discord import ui
+from discord import ui,app_commands
 from discord.ext import commands,tasks
 import discord.ext.commands 
 import discord.utils
@@ -58,7 +58,7 @@ async def on_command_error(ctx, error):
 
 class MVGFormular(ui.Modal, title='Abfrage von MVG Abfahrten'):
     station = ui.TextInput(label='Haltestelle', required=True)
-    offset = ui.TextInput(label='Minuten bis zur Abfahrt', style=discord.TextStyle.short, required=False, default='0')
+    offset = ui.TextInput(label='Minuten bis zur Abfahrt', required=False, default='0')
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True, thinking=True)
@@ -74,15 +74,25 @@ class MVGFormular(ui.Modal, title='Abfrage von MVG Abfahrten'):
 
 class MVGFormularButton(ui.View):
     @ui.button(label='Zeige Formular zur Abfrage von MVG Abfahrten', style=discord.ButtonStyle.red)
-    async def zeigeFormular(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def zeigeFormular(self, interaction: discord.Interaction, button: ui.Button):
         formular = MVGFormular()
         await interaction.response.send_modal(formular)
         formular.message = await interaction.original_response()
 
-@bot.command(description='Zeigt Formular mit Button zur Abfrage von MVG Abfahrten')
-async def abfahrtF(ctx: commands.Context):
-    view = MVGFormularButton()
-    await ctx.send(view=view)    
+@bot.hybrid_command(description='Zeigt Formular zur Abfrage von MVG Abfahrten')
+async def abfahrtf(ctx: commands.Context):
+    if not ctx.interaction:
+        await ctx.send(view=MVGFormularButton())
+    else:
+        formular = MVGFormular()
+        await ctx.interaction.response.send_modal(formular)
+        #formular.message = await ctx.interaction.original_response()    # gives 404 Not Found (error code: 10015): Unknown Webhook
+
+@bot.command(description='Synchronisiere App Befehle')
+@commands.is_owner()
+async def sync(ctx: commands.Context):
+    await bot.tree.sync()
+    await ctx.send('Command tree synced.')
 
 @bot.command(description='Zeigt MVG Abfahrten')
 async def abfahrt(ctx: commands.Context, offset: Optional[int], *, station: str):
